@@ -36,15 +36,17 @@ class AlertActivity : ComponentActivity() {
 
     val title = intent.getStringExtra(EXTRA_TITLE) ?: return
     val body = intent.getStringExtra(EXTRA_BODY) ?: return
+    val seconds = intent.getStringExtra(EXTRA_SECONDS) ?: return
+    val secondsLong = seconds.toLongOrNull() ?: return
 
+    if (!viewModel.isAlertStarted) {
+      startService(Intent(this, AlarmService::class.java))
+    }
+    viewModel.startTimeout(secondsLong) { finish() }
     registerReceiver(
       finishReceiver, IntentFilter(ACTION_FINISH_ALERT_ACTIVITY),
       RECEIVER_NOT_EXPORTED
     )
-    if (!viewModel.isAlertStarted) {
-      startService(Intent(this, AlarmService::class.java))
-    }
-    viewModel.startTimeout { finish() }
 
     setContent {
       WatchifyTheme {
@@ -87,14 +89,16 @@ class AlertActivity : ComponentActivity() {
   companion object {
     private const val EXTRA_TITLE = "title"
     private const val EXTRA_BODY = "body"
+    private const val EXTRA_SECONDS = "seconds"
 
     const val ACTION_FINISH_ALERT_ACTIVITY = "action_finish_alert_activity"
 
-    fun createIntent(context: Context, title: String, body: String): Intent =
+    fun createIntent(context: Context, title: String, body: String, seconds: String): Intent =
       Intent(context, AlertActivity::class.java).apply {
         setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         putExtra(EXTRA_TITLE, title)
         putExtra(EXTRA_BODY, body)
+        putExtra(EXTRA_SECONDS, seconds)
       }
   }
 }

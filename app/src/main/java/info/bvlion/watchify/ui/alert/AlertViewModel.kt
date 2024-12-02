@@ -12,11 +12,11 @@ class AlertViewModel : ViewModel() {
   var isAlertStarted: Boolean = false
     private set
 
-  fun startTimeout(onTimeout: () -> Unit) {
+  fun startTimeout(targetSeconds: Long, onTimeout: () -> Unit) {
     isAlertStarted = true
     timeoutJob?.cancel()
     timeoutJob = viewModelScope.launch {
-      delay(5 * 60 * 1000)
+      delay(targetSeconds * 1000)
       onTimeout()
     }
   }

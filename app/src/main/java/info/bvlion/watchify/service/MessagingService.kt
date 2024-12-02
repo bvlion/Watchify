@@ -35,10 +35,17 @@ class MessagingService : FirebaseMessagingService() {
         TIMER_WORKER_NAME,
         ExistingWorkPolicy.REPLACE,
         OneTimeWorkRequestBuilder<TimerWorker>()
-          .setInitialDelay(1, TimeUnit.MINUTES)
+          .setInitialDelay(
+            message.data[MESSAGE_DATA_KEY_WAIT_SECONDS].let {
+              it?.toLongOrNull() ?:
+              throw IllegalArgumentException("Illegal wait_seconds parameter: $it")
+            },
+            TimeUnit.SECONDS
+          )
           .setInputData(workDataOf(
             TimerWorker.TITLE_PARAMETER to message.data[MESSAGE_DATA_KEY_TITLE],
-            TimerWorker.BODY_PARAMETER to message.data[MESSAGE_DATA_KEY_BODY]
+            TimerWorker.BODY_PARAMETER to message.data[MESSAGE_DATA_KEY_BODY],
+            TimerWorker.SECONDS_PARAMETER to message.data[MESSAGE_DATA_KEY_ALERT_SECONDS],
           ))
           .build()
       )
@@ -54,6 +61,8 @@ class MessagingService : FirebaseMessagingService() {
     private const val TIMER_WORKER_NAME = "timer_work"
     private const val MESSAGE_DATA_KEY_TITLE = "title"
     private const val MESSAGE_DATA_KEY_BODY = "body"
+    private const val MESSAGE_DATA_KEY_WAIT_SECONDS = "wait_seconds"
+    private const val MESSAGE_DATA_KEY_ALERT_SECONDS = "alert_seconds"
     private const val MESSAGE_DATA_KEY_TYPE = "type"
     private const val MESSAGE_DATA_VALUE_TYPE_START = "start"
     private const val MESSAGE_DATA_VALUE_TYPE_STOP = "stop"

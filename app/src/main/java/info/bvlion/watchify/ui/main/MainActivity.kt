@@ -128,9 +128,9 @@ fun MainScreen(
       FcmCard(
         title = "アラート設定用 FCM 登録",
         curlCommand =  """
-            curl -X PUT "${BuildConfig.RT_DB_URL}$androidId.json" -d '{"title":"緊急アラート","body":"緊急アラートが発生しました", "type":"start", "timestamp":${System.currentTimeMillis()}}
+            curl -X PUT "${BuildConfig.RT_DB_URL}notifier/$androidId.json" -d '{ "title":"緊急アラート", "body":"緊急アラートが発生しました", "wait_seconds":"30", "alert_seconds":"300", "timestamp":${System.currentTimeMillis()} }
           """.trimIndent(),
-        description = "表示したいタイトルと内容をセットにしてアラームを登録します。\n登録して1分後にアラートが5分間、警告音と共に表示されます。"
+        description = "表示したいタイトルと内容をセットにしてアラームを登録します。\n登録するとパラメータの wait_seconds で指定した秒後にアラートが alert_seconds で指定した秒数間、警告音と共に表示されます。"
       )
 
       Spacer(modifier = Modifier.height(16.dp))
@@ -138,7 +138,7 @@ fun MainScreen(
       FcmCard(
         title = "アラート設定解除用 FCM 登録",
         curlCommand = """
-            curl -X PUT "${BuildConfig.RT_DB_URL}$androidId.json" -d '{"type":"stop", "timestamp":${System.currentTimeMillis()}}
+            curl -X PUT "${BuildConfig.RT_DB_URL}stop/$androidId.json" -d '{ "timestamp":${System.currentTimeMillis()} }
           """.trimIndent(),
         description = "アラートの設定解除や鳴っているアラートを止められます。"
       )
