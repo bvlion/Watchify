@@ -52,6 +52,7 @@ class MessagingService : FirebaseMessagingService() {
       MESSAGE_DATA_VALUE_TYPE_STOP -> {
         workManager.cancelUniqueWork(TIMER_WORKER_NAME)
         sendBroadcast(Intent(AlertActivity.ACTION_FINISH_ALERT_ACTIVITY))
+        stopService(Intent(this, AlarmService::class.java))
       }
       else -> Firebase.crashlytics.recordException(IllegalArgumentException("Unknown type parameter: ${message.data[MESSAGE_DATA_KEY_TYPE]}"))
     }
