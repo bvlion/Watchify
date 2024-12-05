@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import info.bvlion.watchify.BuildConfig
 import info.bvlion.watchify.ui.theme.WatchifyTheme
 
@@ -55,19 +56,45 @@ class MainActivity : ComponentActivity() {
   private val registerOverlaysPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
     viewModel.updateCanDrawOverlays()
   }
+  private val registerIgnoringBatteryPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    viewModel.updateIgnoringBatteryOptimizations()
+  }
 
-  @SuppressLint("HardwareIds")
+  @SuppressLint("HardwareIds", "BatteryLife")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
 
     setContent {
       val canDrawOverlays = viewModel.canDrawOverlays.collectAsState()
+      val isIgnoringBatteryOptimizations = viewModel.isIgnoringBatteryOptimizations.collectAsState()
       WatchifyTheme {
         MainScreen(
+          isIgnoringBatteryOptimizations.value,
           Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID),
-          {},
-          {},
+          {
+            registerIgnoringBatteryPermission.launch(
+              Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                setData(Uri.parse("package:$packageName"))
+              }
+            )
+          },
+          {
+            startActivity(
+              Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+              )
+            )
+          },
+          {
+            startActivity(
+              Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(BuildConfig.CONTACT_URL)
+              )
+            )
+          },
           {},
           {}
         )
@@ -101,7 +128,9 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
+  isIgnoringBatteryOptimizations: Boolean,
   androidId: String,
+  onBatteryOptimizationSettingsClick: () -> Unit,
   onReviewClick: () -> Unit,
   onFeedbackClick: () -> Unit,
   onTermsClick: () -> Unit,
@@ -150,6 +179,13 @@ fun MainScreen(
     ModalBottomSheet(
       onDismissRequest = { showMenu.value = false }
     ) {
+      if (!isIgnoringBatteryOptimizations) {
+        MenuItem(
+          "バッテリー最適化から除外",
+          "※ 動作が安定しない場合にお試しください",
+          onClick = { onBatteryOptimizationSettingsClick(); showMenu.value = false }
+        )
+      }
       MenuItem("利用規約", onClick = { onTermsClick(); showMenu.value = false })
       MenuItem("プライバシーポリシー", onClick = { onPrivacyClick(); showMenu.value = false })
       MenuItem("レビューする", onClick = { onReviewClick(); showMenu.value = false })
@@ -173,9 +209,9 @@ fun FcmCard(title: String, curlCommand: String, description: String) {
     ) {
       Text(text = title, style = MaterialTheme.typography.headlineSmall)
       Spacer(modifier = Modifier.height(8.dp))
-      Text(text = description, style = MaterialTheme.typography.bodySmall)
+      Text(text = description, style = MaterialTheme.typography.bodyMedium)
       Spacer(modifier = Modifier.height(16.dp))
-      Text(text = curlCommand, style = MaterialTheme.typography.bodyMedium)
+      Text(text = curlCommand, style = MaterialTheme.typography.bodySmall)
       Spacer(modifier = Modifier.height(8.dp))
       Button(onClick = {
         clipboardManager.setPrimaryClip(
@@ -183,16 +219,28 @@ fun FcmCard(title: String, curlCommand: String, description: String) {
         )
         Toast.makeText(context, "クリップボードにコピーしました", Toast.LENGTH_SHORT).show()
       }) {
-        Text("クリップボードにコマンドをコピー")
+        Text("コマンドをクリップボードにコピー")
       }
     }
   }
 }
 
 @Composable
-fun MenuItem(text: String, onClick: () -> Unit) {
+fun MenuItem(title: String, body: String = "", onClick: () -> Unit) {
   TextButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-    Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
+    Column(
+      modifier = Modifier.padding(16.dp).fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      Text(title, style = MaterialTheme.typography.bodyLarge)
+      if (body.isNotEmpty()) {
+        Text(
+          body,
+          style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+          modifier = Modifier.padding(top = 4.dp)
+        )
+      }
+    }
   }
 }
 
@@ -200,6 +248,6 @@ fun MenuItem(text: String, onClick: () -> Unit) {
 @Composable
 fun DefaultPreview() {
   WatchifyTheme {
-    MainScreen("android_id", {},{},{},{})
+    MainScreen(true, "android_id", {},{},{},{},{})
   }
 }

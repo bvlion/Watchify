@@ -17,7 +17,7 @@ android {
     minSdk = 31
     targetSdk = 35
     versionCode = 1
-    versionName = "1.0"
+    versionName = "1.0.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables {
@@ -35,6 +35,7 @@ android {
 
   defaultConfig {
     buildConfigField("String", "RT_DB_URL", "\"${localProperties.getProperty("RT_DB_URL")}\"")
+    buildConfigField("String", "CONTACT_URL", "\"${localProperties.getProperty("CONTACT_URL")}\"")
   }
 
   signingConfigs {
@@ -49,7 +50,6 @@ android {
   buildTypes {
     debug {
       isDebuggable = true
-      applicationIdSuffix = ".debug"
       versionNameSuffix = "-debug"
     }
     release {
