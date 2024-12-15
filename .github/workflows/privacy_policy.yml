@@ -23,7 +23,7 @@ jobs:
       - name: Create html files
         run: |
           npm install
-          node parse.js ${{ secrets.PRIVACY_POLICY_URL }}
+          node parse.js "${{ secrets.PRIVACY_POLICY_URL }}"
         working-directory: AppInfoManager/docs
 
       - name: Deploy to GitHub Pages
