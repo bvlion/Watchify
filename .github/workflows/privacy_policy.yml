@@ -18,7 +18,6 @@ jobs:
         with:
           cache: "npm"
           cache-dependency-path: "package-lock.json"
-        working-directory: AppInfoManager/docs
 
       - name: Create html files
         run: |
