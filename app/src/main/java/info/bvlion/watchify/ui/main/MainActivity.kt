@@ -36,6 +36,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.firestore.FirebaseFirestore
+import info.bvlion.appinfomanager.changelog.ChangeLogManager
+import info.bvlion.appinfomanager.contents.ContentsManager
+import info.bvlion.appinfomanager.update.AppUpdateManager
 import info.bvlion.watchify.BuildConfig
 import info.bvlion.watchify.ui.theme.WatchifyTheme
 
@@ -60,14 +65,23 @@ class MainActivity : ComponentActivity() {
     viewModel.updateIgnoringBatteryOptimizations()
   }
 
+  private val contentsManager = ContentsManager(FirebaseFirestore.getInstance(), this)
+
   @SuppressLint("HardwareIds", "BatteryLife")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
 
     setContent {
+      AppUpdateManager(FirebaseFirestore.getInstance(), this).CheckForUpdate(BuildConfig.VERSION_CODE)
+
       val canDrawOverlays = viewModel.canDrawOverlays.collectAsState()
       val isIgnoringBatteryOptimizations = viewModel.isIgnoringBatteryOptimizations.collectAsState()
+
+      val showTerms = remember { mutableStateOf(false) }
+      val showPrivacy = remember { mutableStateOf(false) }
+      val showChangeLog = remember { mutableStateOf(false) }
+
       WatchifyTheme {
         MainScreen(
           isIgnoringBatteryOptimizations.value,
@@ -95,8 +109,9 @@ class MainActivity : ComponentActivity() {
               )
             )
           },
-          {},
-          {}
+          { showTerms.value = true },
+          { showPrivacy.value = true },
+          { showChangeLog.value = true }
         )
         if (!canDrawOverlays.value) {
           AlertDialog(
@@ -119,6 +134,9 @@ class MainActivity : ComponentActivity() {
             }
           )
         }
+        contentsManager.ShowTermsOfServiceDialog(showTerms)
+        contentsManager.ShowPrivacyPolicyDialog(showPrivacy)
+        ChangeLogManager(FirebaseFirestore.getInstance(), this).ShowChangeLog(showChangeLog)
       }
     }
   }
@@ -134,7 +152,8 @@ fun MainScreen(
   onReviewClick: () -> Unit,
   onFeedbackClick: () -> Unit,
   onTermsClick: () -> Unit,
-  onPrivacyClick: () -> Unit
+  onPrivacyClick: () -> Unit,
+  onChangeLogClick: () ->Unit
 ) {
   val showMenu = remember { mutableStateOf(false) }
 
@@ -174,10 +193,10 @@ fun MainScreen(
     }
   }
 
-  // Modal Bottom Sheet for Menu
   if (showMenu.value) {
     ModalBottomSheet(
-      onDismissRequest = { showMenu.value = false }
+      onDismissRequest = { showMenu.value = false },
+      sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
       if (!isIgnoringBatteryOptimizations) {
         MenuItem(
@@ -190,6 +209,7 @@ fun MainScreen(
       MenuItem("プライバシーポリシー", onClick = { onPrivacyClick(); showMenu.value = false })
       MenuItem("レビューする", onClick = { onReviewClick(); showMenu.value = false })
       MenuItem("ご意見", onClick = { onFeedbackClick(); showMenu.value = false })
+      MenuItem("更新履歴", onClick = { showMenu.value = false; onChangeLogClick() })
     }
   }
 }
@@ -248,6 +268,6 @@ fun MenuItem(title: String, body: String = "", onClick: () -> Unit) {
 @Composable
 fun DefaultPreview() {
   WatchifyTheme {
-    MainScreen(true, "android_id", {},{},{},{},{})
+    MainScreen(true, "android_id", {},{},{},{},{},{})
   }
 }

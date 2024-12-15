@@ -88,6 +88,7 @@ android {
 }
 
 dependencies {
+  implementation(project(":AppInfoManager"))
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)
@@ -102,6 +103,7 @@ dependencies {
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.database.ktx)
+  implementation(libs.firebase.firestore.ktx)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Watchify"
 include(":app")
- 
+include(":AppInfoManager")
