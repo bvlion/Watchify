@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.firebase.firestore.FirebaseFirestore
 import info.bvlion.appinfomanager.changelog.ChangeLogManager
 import info.bvlion.appinfomanager.contents.ContentsManager
@@ -69,6 +70,7 @@ class MainActivity : ComponentActivity() {
 
   @SuppressLint("HardwareIds", "BatteryLife")
   override fun onCreate(savedInstanceState: Bundle?) {
+    installSplashScreen()
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
 

@@ -16,7 +16,7 @@ android {
     applicationId = "info.bvlion.watchify"
     minSdk = 31
     targetSdk = 35
-    versionCode = 1
+    versionCode = 3
     versionName = "1.0.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -54,11 +54,15 @@ android {
     }
     release {
       isMinifyEnabled = true
+      isShrinkResources = true
       signingConfig = signingConfigs.getByName("release")
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
+      ndk {
+        debugSymbolLevel = "FULL"
+      }
     }
   }
 
@@ -99,6 +103,7 @@ dependencies {
   implementation(libs.androidx.material3)
   implementation(libs.androidx.work)
   implementation(libs.androidx.fragment)
+  implementation(libs.androidx.splashscreen)
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.messaging)
