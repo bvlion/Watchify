@@ -44,6 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -162,7 +164,7 @@ fun MainScreen(
   Scaffold(
     floatingActionButton = {
       FloatingActionButton(onClick = { showMenu.value = true }) {
-        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+        Icon(Icons.Default.MoreVert, contentDescription = "メニュー")
       }
     }
   ) { padding ->
@@ -240,7 +242,7 @@ fun FcmCard(title: String, curlCommand: String, description: String) {
           ClipData.newPlainText("label", curlCommand)
         )
         Toast.makeText(context, "クリップボードにコピーしました", Toast.LENGTH_SHORT).show()
-      }) {
+      }, modifier = Modifier.semantics { contentDescription = "コマンドをクリップボードにコピー" }) {
         Text("コマンドをクリップボードにコピー")
       }
     }
@@ -249,7 +251,7 @@ fun FcmCard(title: String, curlCommand: String, description: String) {
 
 @Composable
 fun MenuItem(title: String, body: String = "", onClick: () -> Unit) {
-  TextButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+  TextButton(onClick = onClick, modifier = Modifier.fillMaxWidth().semantics { contentDescription = title }) {
     Column(
       modifier = Modifier.padding(16.dp).fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally
