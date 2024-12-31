@@ -10,5 +10,6 @@
 local.properties
 .kotlin
 google-services.json
+google-play-service.json
 *.apk
 *.aab

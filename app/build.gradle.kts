@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.google.services)
   alias(libs.plugins.firebase.crashlytics.gradle)
+  alias(libs.plugins.play.publisher)
 }
 
 android {
@@ -116,4 +117,9 @@ dependencies {
   androidTestImplementation(libs.androidx.ui.test.junit4)
   debugImplementation(libs.androidx.ui.tooling)
   debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+play {
+  track.set("alpha")
+  serviceAccountCredentials.set(file("../google-play-service.json"))
 }
