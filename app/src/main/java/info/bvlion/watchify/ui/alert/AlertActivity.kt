@@ -85,7 +85,6 @@ class AlertActivity : ComponentActivity() {
     unregisterReceiver(finishReceiver)
   }
 
-
   companion object {
     private const val EXTRA_TITLE = "title"
     private const val EXTRA_BODY = "body"
