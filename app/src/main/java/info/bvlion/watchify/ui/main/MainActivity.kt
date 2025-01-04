@@ -242,7 +242,7 @@ fun FcmCard(title: String, curlCommand: String, description: String) {
           ClipData.newPlainText("label", curlCommand)
         )
         Toast.makeText(context, "クリップボードにコピーしました", Toast.LENGTH_SHORT).show()
-      }, modifier = Modifier.semantics { contentDescription = "コマンドをクリップボードにコピー" }) {
+      }, modifier = Modifier.semantics { contentDescription = "$title コマンドをクリップボードにコピー" }) {
         Text("コマンドをクリップボードにコピー")
       }
     }
