@@ -9,16 +9,16 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun WatchifyTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+  darkTheme: Boolean = isSystemInDarkTheme(),
+  content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-    MaterialTheme(
-        colorScheme = if (darkTheme)
-            dynamicDarkColorScheme(context)
-        else
-            dynamicLightColorScheme(context),
-        typography = Typography,
-        content = content
-    )
+  val context = LocalContext.current
+  MaterialTheme(
+    colorScheme = if (darkTheme)
+      dynamicDarkColorScheme(context)
+    else
+      dynamicLightColorScheme(context),
+    typography = Typography,
+    content = content
+  )
 }
