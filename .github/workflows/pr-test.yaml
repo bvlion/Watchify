@@ -43,10 +43,10 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run shared Test
+      - name: Run Unit Test
         run: ./gradlew testDebugUnitTest
 
-      - name: Run Android UI Test
+      - name: Run UI Test
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 32
@@ -57,7 +57,7 @@ jobs:
           script: ./gradlew connectedCheck
 
       - name: Upload UI test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: instrumentation_test_report
           path: app/build/reports/androidTests/connected/debug/
